@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" && cd .. )" >/dev/null 2>&1 && pwd )"
+BASE="$(dirname "$DIR")"
+NOVA="${BASE}/nova"
+
+
+echo " [initialize] composer .. setting up enviroment ...  "
+COMPOSER_MEMORY_LIMIT=-1 composer install
+echo " -- OK --  "
+
+
+echo " [initialize] keygen .. regenerating key ...  "
+php artisan key:generate
+echo " -- OK --  "
+
+if [ "$1" == "clear-db" ] || [ "$1" == "reset" ] ; then
+  echo " [reset] resetting database ...  "
+  php artisan migrate:fresh
+  echo " -- OK --  "
+fi
+
+if [ -d "$NOVA" ] ; then
+   php artisan nova:install
+fi
+
+echo " [initialize] database .. setting up database ...  "
+php artisan migrate
+echo " -- OK --  "
+
+echo " [initialize] seeding database ...  "
+php artisan db:seed
+echo " -- OK --  "
+
+if [ "$1" == "clear-node" ] || [ "$1" == "reset" ] ; then
+  echo " [reset] node ...  "
+  rm -rf node_modules
+  echo " -- OK --  "
+fi
+
+echo " [initialize] node .. setting up node ...  "
+npm install
+echo " -- OK --  "
+
+echo " [initialize] vue .. compiling vue.js ...  "
+npm run dev
+echo " -- OK --  "
+
+echo " [cache] clearing caches ...  "
+php artisan cache:clear
+php artisan view:clear
+echo " -- COMPLETE --  "

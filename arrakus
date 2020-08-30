@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# ===================================================================
+# Hydrate
+# @description: a setup script for getting docker enviroment for
+#   homicity projects
+# @author: Mario Bonito
+# @version: 0.1
+# ===================================================================
+
+# Variables
+# ----------------------
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+LARADOCK_VERSION=11.0
+OLDIFS="$IFS"
+PLATFM="unix"
+
+case "$(uname -s)" in
+   CYGWIN*|MINGW32*|MSYS*|MINGW*)
+     PLATFM="windoz"
+    ;;
+   *)
+     PLATFM="unix"
+     ;;
+esac
+
+DOCKER="${DIR}/docker"
+DATA_DOCKER="${DIR}/.arrakus"
+SCAFFOLDING="${DIR}/scaffolding"
+OVERRIDES="${SCAFFOLDING}/docker"
+
+# Lets check to see if there is an override
+if [[ "$1" == "reset" ]]; then
+  rm -rf "$DOCKER"
+  rm -rf "$DATA_DOCKER"
+  echo "  [dockicity] reset the plaftform"
+  exit
+fi
+
+if [[ ! -d "${DATA_DOCKER}" ]]; then
+    mkdir $DATA_DOCKER
+    mkdir "${DATA_DOCKER}/data"
+fi
+
+# Lets check if there is a docker directory
+if [[ ! -d "${DOCKER}" ]]; then
+  curl -L https://github.com/laradock/laradock/archive/v${LARADOCK_VERSION}.tar.gz | tar xz
+  cp -r laradock*/. docker
+  rm -rf laradock*
+  find docker -maxdepth 1 -type f -exec rm {} \;
+  find docker -maxdepth 1 -type d -name ".*" -exec rm -rf {} \;
+fi
+
+cp ${SCAFFOLDING}/.env ${DOCKER}/.env
+cp ${SCAFFOLDING}/docker-compose.yml ${DOCKER}/docker-compose.yml
+
+IFS=$'\n'
+CONTAINERS=( $(find docker -maxdepth 1 -type d -exec basename \{} \;))
+IFS=OLDIFS
+
+for cnt in "${CONTAINERS[@]}"
+do
+  isInFile=$(cat "${DOCKER}/docker-compose.yml" | grep -c "$cnt")
+  if [ $isInFile -eq 0 ] && [ "$cnt" != "scaffolding" ]; then
+      echo "  [dockicity] removing $DOCKER/$cnt"
+      rm -rf "$DOCKER/$cnt"
+  fi
+done
+
+echo "  [dockicity] hydrating the dockerfiles"
+find "$DOCKER" -type f -exec perl -p -i -e 's/(?<!FROM\s)laradock/sandworm/g' {} \;
+find "$DOCKER" -name "*.bak" -type f -delete
+
+# -- add a docker folder in the scaffolding to override some files in the new built docker folder
+if [[ -d "${OVERRIDES}" ]]; then
+  rsync -a "${OVERRIDES}/" "${DOCKER}"
+fi
