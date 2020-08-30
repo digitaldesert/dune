@@ -275,7 +275,7 @@ services:
       ports:
         - "${MINIO_PORT}:9000"
       environment:
-        - MINIO_ACCESS_KEY=access
+        - MINIO_ACCESS_KEY=sandtrout
         - MINIO_SECRET_KEY=secretkey
       networks:
         - frontend

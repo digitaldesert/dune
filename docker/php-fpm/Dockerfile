@@ -7,7 +7,7 @@
 #    https://github.com/Laradock/php-fpm
 #
 # To change its version, see the available Tags on the Docker Hub:
-#    https://hub.docker.com/r/sandworm/php-fpm/tags/
+#    https://hub.docker.com/r/sandtrout/php-fpm/tags/
 #
 # Note: Base Image name format {image-tag}-{php-version}
 #
@@ -45,11 +45,11 @@ RUN set -xe; \
       #--------------------------------------------------------------------------
       #
       # Mandatory Software's such as ("mcrypt", "pdo_mysql", "libssl-dev", ....)
-      # are installed on the base image 'sandworm/php-fpm' image. If you want
+      # are installed on the base image 'sandtrout/php-fpm' image. If you want
       # to add more Software's or remove existing one, you need to edit the
       # base image (https://github.com/Laradock/php-fpm).
       #
-      # next lines are here becase there is no auto build on dockerhub see https://github.com/sandworm/sandworm/pull/1903#issuecomment-463142846
+      # next lines are here becase there is no auto build on dockerhub see https://github.com/sandtrout/sandtrout/pull/1903#issuecomment-463142846
       libzip-dev zip unzip && \
       if [ ${LARADOCK_PHP_VERSION} = "7.3" ] || [ ${LARADOCK_PHP_VERSION} = "7.4" ]; then \
         docker-php-ext-configure zip; \

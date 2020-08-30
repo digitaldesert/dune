@@ -7,7 +7,7 @@
 #    https://github.com/Laradock/workspace
 #
 # To change its version, see the available Tags on the Docker Hub:
-#    https://hub.docker.com/r/sandworm/workspace/tags/
+#    https://hub.docker.com/r/sandtrout/workspace/tags/
 #
 # Note: Base Image name format {image-tag}-{php-version}
 #
@@ -60,9 +60,9 @@ RUN if [ ${CHANGE_SOURCE} = true ]; then \
 RUN set -xe; \
     apt-get update -yqq && \
     pecl channel-update pecl.php.net && \
-    groupadd -g ${PGID} sandworm && \
-    useradd -u ${PUID} -g sandworm -m sandworm -G docker_env && \
-    usermod -p "*" sandworm -s /bin/bash && \
+    groupadd -g ${PGID} sandtrout && \
+    useradd -u ${PUID} -g sandtrout -m sandtrout -G docker_env && \
+    usermod -p "*" sandtrout -s /bin/bash && \
     apt-get install -yqq \
       apt-utils \
       #
@@ -71,11 +71,11 @@ RUN set -xe; \
       #--------------------------------------------------------------------------
       #
       # Mandatory Software's such as ("php-cli", "git", "vim", ....) are
-      # installed on the base image 'sandworm/workspace' image. If you want
+      # installed on the base image 'sandtrout/workspace' image. If you want
       # to add more Software's or remove existing one, you need to edit the
       # base image (https://github.com/Laradock/workspace).
       #
-      # next lines are here because there is no auto build on dockerhub see https://github.com/sandworm/sandworm/pull/1903#issuecomment-463142846
+      # next lines are here because there is no auto build on dockerhub see https://github.com/sandtrout/sandtrout/pull/1903#issuecomment-463142846
       libzip-dev zip unzip \
       # Install the zip extension
       php${LARADOCK_PHP_VERSION}-zip \
@@ -111,17 +111,17 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 USER root
 
 COPY ./aliases.sh /root/aliases.sh
-COPY ./aliases.sh /home/sandworm/aliases.sh
+COPY ./aliases.sh /home/sandtrout/aliases.sh
 
 RUN sed -i 's/\r//' /root/aliases.sh && \
-    sed -i 's/\r//' /home/sandworm/aliases.sh && \
-    chown sandworm:sandworm /home/sandworm/aliases.sh && \
+    sed -i 's/\r//' /home/sandtrout/aliases.sh && \
+    chown sandtrout:sandtrout /home/sandtrout/aliases.sh && \
     echo "" >> ~/.bashrc && \
     echo "# Load Custom Aliases" >> ~/.bashrc && \
     echo "source ~/aliases.sh" >> ~/.bashrc && \
 	  echo "" >> ~/.bashrc
 
-USER sandworm
+USER sandtrout
 
 RUN echo "" >> ~/.bashrc && \
     echo "# Load Custom Aliases" >> ~/.bashrc && \
@@ -135,19 +135,19 @@ RUN echo "" >> ~/.bashrc && \
 USER root
 
 # Add the composer.json
-COPY ./composer.json /home/sandworm/.composer/composer.json
+COPY ./composer.json /home/sandtrout/.composer/composer.json
 
 # Add the auth.json for magento 2 credentials
-COPY ./auth.json /home/sandworm/.composer/auth.json
+COPY ./auth.json /home/sandtrout/.composer/auth.json
 
-# Make sure that ~/.composer belongs to sandworm
-RUN chown -R sandworm:sandworm /home/sandworm/.composer
+# Make sure that ~/.composer belongs to sandtrout
+RUN chown -R sandtrout:sandtrout /home/sandtrout/.composer
 
 # Export composer vendor path
 RUN echo "" >> ~/.bashrc && \
     echo 'export PATH="$HOME/.composer/vendor/bin:$PATH"' >> ~/.bashrc
 
-USER sandworm
+USER sandtrout
 
 # Check if global install need to be ran
 ARG COMPOSER_GLOBAL_INSTALL=false
@@ -164,7 +164,7 @@ ENV COMPOSER_AUTH ${COMPOSER_AUTH}
 
 RUN if [ ${COMPOSER_AUTH} = false ]; then \
     # remove the file
-    rm /home/sandworm/.composer/auth.json \
+    rm /home/sandtrout/.composer/auth.json \
 ;fi
 
 ARG COMPOSER_REPO_PACKAGIST
@@ -183,7 +183,7 @@ RUN echo "" >> ~/.bashrc && \
 ###########################################################################
 
 # add ./vendor/bin to non-root user's bashrc (needed for phpunit)
-USER sandworm
+USER sandtrout
 
 RUN echo "" >> ~/.bashrc && \
     echo 'export PATH="/var/www/vendor/bin:$PATH"' >> ~/.bashrc
@@ -428,8 +428,8 @@ RUN if [ ${INSTALL_WORKSPACE_SSH} = true ]; then \
         && rm -f /tmp/id_rsa* \
         && chmod 644 /root/.ssh/authorized_keys /root/.ssh/id_rsa.pub \
     && chmod 400 /root/.ssh/id_rsa \
-    && cp -rf /root/.ssh /home/sandworm \
-    && chown -R sandworm:sandworm /home/sandworm/.ssh \
+    && cp -rf /root/.ssh /home/sandtrout \
+    && chown -R sandtrout:sandtrout /home/sandtrout/.ssh \
 ;fi
 
 ###########################################################################
@@ -639,7 +639,7 @@ RUN if [ ${INSTALL_DRUPAL_CONSOLE} = true ]; then \
     chmod +x /usr/local/bin/drupal \
 ;fi
 
-USER sandworm
+USER sandtrout
 
 ###########################################################################
 # Node / NVM:
@@ -655,7 +655,7 @@ ARG INSTALL_NPM_VUE_CLI=false
 ARG INSTALL_NPM_ANGULAR_CLI=false
 ARG NPM_REGISTRY
 ENV NPM_REGISTRY ${NPM_REGISTRY}
-ENV NVM_DIR /home/sandworm/.nvm
+ENV NVM_DIR /home/sandtrout/.nvm
 ARG NVM_NODEJS_ORG_MIRROR
 ENV NVM_NODEJS_ORG_MIRROR ${NVM_NODEJS_ORG_MIRROR}
 
@@ -682,7 +682,7 @@ RUN if [ ${INSTALL_NODE} = true ]; then \
         && if [ ${INSTALL_NPM_ANGULAR_CLI} = true ]; then \
         npm install -g @angular/cli \
         ;fi \
-        && ln -s `npm bin --global` /home/sandworm/.node-bin \
+        && ln -s `npm bin --global` /home/sandtrout/.node-bin \
 ;fi
 
 # Wouldn't execute when added to the RUN statement in the above block
@@ -698,12 +698,12 @@ USER root
 
 RUN if [ ${INSTALL_NODE} = true ]; then \
     echo "" >> ~/.bashrc && \
-    echo 'export NVM_DIR="/home/sandworm/.nvm"' >> ~/.bashrc && \
+    echo 'export NVM_DIR="/home/sandtrout/.nvm"' >> ~/.bashrc && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.bashrc \
 ;fi
 
 # Add PATH for node
-ENV PATH $PATH:/home/sandworm/.node-bin
+ENV PATH $PATH:/home/sandtrout/.node-bin
 
 # Make it so the node modules can be executed with 'docker-compose exec'
 # We'll create symbolic links into '/usr/local/bin'.
@@ -728,7 +728,7 @@ RUN if [ ${NPM_REGISTRY} ]; then \
 # PNPM:
 ###########################################################################
 
-USER sandworm
+USER sandtrout
 
 ARG INSTALL_PNPM=false
 
@@ -741,7 +741,7 @@ RUN if [ ${INSTALL_PNPM} = true ]; then \
 # YARN:
 ###########################################################################
 
-USER sandworm
+USER sandtrout
 
 ARG INSTALL_YARN=false
 ARG YARN_VERSION=latest
@@ -763,12 +763,12 @@ USER root
 
 RUN if [ ${INSTALL_YARN} = true ]; then \
     echo "" >> ~/.bashrc && \
-    echo 'export YARN_DIR="/home/sandworm/.yarn"' >> ~/.bashrc && \
+    echo 'export YARN_DIR="/home/sandtrout/.yarn"' >> ~/.bashrc && \
     echo 'export PATH="$YARN_DIR/bin:$PATH"' >> ~/.bashrc \
 ;fi
 
 # Add PATH for YARN
-ENV PATH $PATH:/home/sandworm/.yarn/bin
+ENV PATH $PATH:/home/sandtrout/.yarn/bin
 
 ###########################################################################
 # PHP Aerospike:
@@ -879,7 +879,7 @@ RUN set -xe; \
 # Laravel Envoy:
 ###########################################################################
 
-USER sandworm
+USER sandtrout
 
 ARG INSTALL_LARAVEL_ENVOY=false
 
@@ -892,7 +892,7 @@ RUN if [ ${INSTALL_LARAVEL_ENVOY} = true ]; then \
 # Laravel Installer:
 ###########################################################################
 
-USER sandworm
+USER sandtrout
 
 ARG INSTALL_LARAVEL_INSTALLER=false
 
@@ -930,7 +930,7 @@ RUN if [ ${INSTALL_DEPLOYER} = true ]; then \
 ###########################################################################
 # Prestissimo:
 ###########################################################################
-USER sandworm
+USER sandtrout
 
 ARG INSTALL_PRESTISSIMO=false
 
@@ -1034,7 +1034,7 @@ RUN if [ ${INSTALL_IMAGE_OPTIMIZERS} = true ]; then \
     ;fi\
 ;fi
 
-USER sandworm
+USER sandtrout
 
 ###########################################################################
 # Symfony:
@@ -1097,7 +1097,7 @@ RUN if [ ${INSTALL_SUPERVISOR} = true ]; then \
   ;fi \
 ;fi
 
-USER sandworm
+USER sandtrout
 
 ###########################################################################
 # ImageMagick:
@@ -1349,10 +1349,10 @@ RUN if [ ${SHELL_OH_MY_ZSH} = true ]; then \
     apt install -y zsh \
 ;fi
 
-USER sandworm
+USER sandtrout
 RUN if [ ${SHELL_OH_MY_ZSH} = true ]; then \
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --keep-zshrc" && \
-    sed -i -r 's/^plugins=\(.*?\)$/plugins=(laravel5)/' /home/sandworm/.zshrc && \
+    sed -i -r 's/^plugins=\(.*?\)$/plugins=(laravel5)/' /home/sandtrout/.zshrc && \
     echo '\n\
 bindkey "^[OB" down-line-or-search\n\
 bindkey "^[OC" forward-char\n\
@@ -1364,7 +1364,7 @@ bindkey "^[[3~" delete-char\n\
 bindkey "^[[4~" end-of-line\n\
 bindkey "^[[5~" up-line-or-history\n\
 bindkey "^[[6~" down-line-or-history\n\
-bindkey "^?" backward-delete-char\n' >> /home/sandworm/.zshrc \
+bindkey "^?" backward-delete-char\n' >> /home/sandtrout/.zshrc \
 ;fi
 
 USER root

@@ -68,7 +68,7 @@ do
 done
 
 echo "  [dockicity] hydrating the dockerfiles"
-find "$DOCKER" -type f -exec perl -p -i -e 's/(?<!FROM\s)laradock/sandworm/g' {} \;
+find "$DOCKER" -type f -exec perl -p -i -e 's/(?<!FROM\s)laradock/sandtrout/g' {} \;
 find "$DOCKER" -name "*.bak" -type f -delete
 
 # -- add a docker folder in the scaffolding to override some files in the new built docker folder

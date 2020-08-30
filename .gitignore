@@ -19,3 +19,5 @@ Homestead.json
 .phpunit.result.cache
 
 /.idea
+/docker/data
+/docker/logs

@@ -49,8 +49,8 @@ ENV PUID ${PUID}
 ARG PGID=1000
 ENV PGID ${PGID}
 
-RUN addgroup -g ${PGID} sandworm && \
-    adduser -D -G sandworm -u ${PUID} sandworm
+RUN addgroup -g ${PGID} sandtrout && \
+    adduser -D -G sandtrout -u ${PUID} sandtrout
 
 #Install BZ2:
 ARG INSTALL_BZ2=false
