@@ -319,6 +319,17 @@ services:
         - frontend
         - backend
 
+### AMAZON SQS ##############################################
+# TODO: Add in the mapping for the localize elasticmq.conf
+    alpine-sqs:
+      image: roribio16/alpine-sqs:latest
+      ports:
+        - "${AMAZON_SQS_PORT}:9324"
+        - "${AMAZON_SQS_WEB_GUI}:9325"
+      networks:
+        - frontend
+        - backend
+
 ### Docker-in-Docker ################################################
     docker-in-docker:
       image: docker:19.03-dind
