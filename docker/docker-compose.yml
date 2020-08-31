@@ -249,6 +249,9 @@ services:
         - "${NGINX_HOST_HTTPS_PORT}:443"
       depends_on:
         - php-fpm
+        - mongo
+        - minio
+        - alpine-sqs
       networks:
         - frontend
         - backend
@@ -268,7 +271,7 @@ services:
 
 ### Minio ################################################
     minio:
-      build: ./minio
+      image: bitnami/minio:latest
       volumes:
         - ${DATA_PATH_HOST}/minio/data:/export
         - ${DATA_PATH_HOST}/minio/config:/root/.minio
@@ -308,6 +311,7 @@ services:
         - backend
       depends_on:
         - mongo
+      restart: always
 
 ### MailDev ##############################################
     maildev:
