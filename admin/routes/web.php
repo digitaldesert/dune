@@ -14,3 +14,10 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('add','FeedController@create');
+Route::post('add','FeedController@store');
+Route::get('feeds','FeedController@index');
+Route::get('edit/{id}','FeedController@edit');
+Route::post('edit/{id}','FeedController@update');
+Route::delete('{id}','FeedController@destroy');

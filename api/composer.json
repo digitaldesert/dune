@@ -7,6 +7,7 @@
     "require": {
         "php": "^7.2",
         "aws/aws-sdk-php": "^3.151",
+        "flipbox/lumen-generator": "^7.0",
         "guzzlehttp/guzzle": "^7.0",
         "jenssegers/mongodb": "^3.6",
         "laravel/lumen-framework": "^6.0",
